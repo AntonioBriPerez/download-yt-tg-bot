@@ -38,7 +38,8 @@ def print_message_metadata(message: Message):
 def start(message):
     print(print_message_metadata(message))
     logging.info("Starting up bot...")
-    bot.send_message(chat_id=message.chat.id, text='Hello motherfucker!!! You wanna some yee yee ass videos or audios?')
+    bot.send_message(chat_id=message.chat.id, text='Hello motherfucker!!! You wanna some yee yee ass videos or audios? \
+    Type /help to check what I can do.')
     logging.info("Bot is up and running!")
 
 
