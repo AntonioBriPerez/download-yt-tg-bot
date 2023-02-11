@@ -14,6 +14,6 @@ COPY bot.py /app/
 COPY .env /app/
 # Install the required packages from the requirements file
 RUN pip3 install --no-cache-dir -r requirements.txt
-
+ENTRYPOINT ["tail", "-f", "/dev/null"]
 # Define the command to run the Flask app
-CMD ["python3", "bot.py"]
+# CMD ["python3", "bot.py"]
