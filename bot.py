@@ -6,7 +6,7 @@ import os
 from pytube import YouTube
 from dotenv import load_dotenv
 from video_utils import *
-
+from moviepy.video.io.VideoFileClip import VideoFileClip
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 load_dotenv()
@@ -69,8 +69,9 @@ def handle_download(message):
             logging.info("Sending back video!")
             video_size = get_file_size(vid_path)
             logging.info("Total video size: " + str(video_size) + " MB")
+            bot.send_message(text="Video size: " + str(video_size) + " MB", chat_id=message.chat.id)
             if video_size >= 50:
-                bot.send_message(text="Videos over 50 MB are not supported. Processing in chunks of 50MB...", chat_id=message.chat.id)
+                bot.send_message(text="Videos over 50 MB are not supported. Processing in chunks of 50MB... (it can be slow)", chat_id=message.chat.id)
                 
                 parts = split_video(vid_path, max_size_mb=50)
                 for idx, p in enumerate(parts): 
