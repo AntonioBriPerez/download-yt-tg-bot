@@ -93,7 +93,7 @@ def handle_download_audio(message):
 
 @bot.message_handler(commands=['help'])
 def handle_help(message): 
-    bot.send_message(chat_id=message.chat.id, text='This is what I can do: \n /download <video_url> to download a video. \n /download_audio <video_url> to download the audio of a video.')
+    bot.send_message(chat_id=message.chat.id, text='This is what I can do: \n /download <video_url> (MAXIMUM VIDEO SIZE IS 50MB!) to download a video. \n /download_audio <video_url> to download the audio of a video.')
 
     
 bot.polling()
