@@ -5,6 +5,7 @@ import logging
 import os
 from pytube import YouTube
 from dotenv import load_dotenv
+from video_converter import *
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -15,7 +16,8 @@ bot = telebot.TeleBot(API_TOKEN)
 def download_video(url):
     try:
         yt = YouTube(url)
-        return yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download()    
+        logging.info(yt.streams)
+        return yt.streams.filter(res="720p").first().download()
     except Exception as e: 
         logging.error(f"Ha habido un error: {e}")
 
@@ -42,16 +44,33 @@ def start(message):
     Type /help to check what I can do.')
     logging.info("Bot is up and running!")
 
+@bot.message_handler(commands=['health'])
+def handle_health(message):
+    bot.send_message(chat_id=message.chat.id, text='up and running!')
+
+def get_file_size(file_path):
+    file_size = os.path.getsize(file_path)
+    return file_size / (1024 * 1024)
 
 @bot.message_handler(commands=['download'])
 def handle_download(message):
     if len(message.text.split()) == 2:
         url = message.text.split()[1]
         print_message_metadata(message)
-        
+        logging.info("Downloading video...")
         if vid_path := download_video(url):
+            logging.info("Converting video..."  )
+            converted_video =  vid_path.replace('.mp4', '_h264.mp4')
+            
             logging.info(f"Path del video: {vid_path}")
-            bot.send_document(chat_id=message.chat.id, document=open(vid_path, 'rb'))
+            logging.info("Sending back video!")
+            video_size = get_file_size(vid_path)
+            logging.info("Total video size: " + str(video_size) + " MB")
+            if video_size >= 50:
+                bot.send_message(text="Videos over 50 MB are not supported. Try a different video.", chat_id=message.chat.id)
+            else:
+                bot.send_document(chat_id=message.chat.id, document=open(vid_path, 'rb'))
+                logging.info("Video sent successfully")
             os.remove(vid_path)
     else:
         bot.send_message(chat_id=message.chat.id, text='Invalid format. Use /download <video_url> to download a video.')
