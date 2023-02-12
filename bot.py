@@ -71,7 +71,7 @@ def handle_download(message):
             logging.info("Total video size: " + str(video_size) + " MB")
             bot.send_message(text="Video size: " + str(video_size) + " MB", chat_id=message.chat.id)
             if video_size >= 40:
-                bot.send_message(text="Videos over 40 MB are not supported. Processing in chunks of 40MB aproximately... (it can be slow)", chat_id=message.chat.id)
+                bot.send_message(text="Videos over 40 MB are not supported. Processing in chunks of 40MB aproximately... (it can be slow 10-15 minutes)", chat_id=message.chat.id)
                 
                 parts = split_video(vid_path, max_size_mb=40)
                 for idx, p in enumerate(parts): 
