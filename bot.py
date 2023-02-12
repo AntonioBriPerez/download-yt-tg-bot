@@ -13,21 +13,25 @@ load_dotenv()
 API_TOKEN = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(API_TOKEN)
 
-def download_video(url):
+def download_video(url, message):
     try:
         yt = YouTube(url)
         logging.info(yt.streams)
         return yt.streams.filter(res="720p").first().download()
     except Exception as e: 
         logging.error(f"Ha habido un error: {e}")
+        bot.send_message(chat_id=message.chat.id, text='There was an error downloading the video')
 
 
-def download_video_audio(url): 
+def download_video_audio(url, message): 
     try:
         yt = YouTube(url)
         return yt.streams.filter(only_audio=True).first().download()
     except Exception as e: 
         logging.error(f"Ha habido un error: {e}")
+        bot.send_message(chat_id=message.chat.id, text='There was an error downloading the audio')
+
+        
         
 def print_message_metadata(message: Message):
     logging.info(f'Message recieved: {message.text}')
@@ -58,7 +62,7 @@ def handle_download(message):
         url = message.text.split()[1]
         print_message_metadata(message)
         logging.info("Downloading video...")
-        if vid_path := download_video(url):
+        if vid_path := download_video(url, message):
             logging.info("Converting video..."  )
             converted_video =  vid_path.replace('.mp4', '_h264.mp4')
             
@@ -81,7 +85,7 @@ def handle_download_audio(message):
         url = message.text.split()[1]
         print_message_metadata(message)
         
-        if vid_path := download_video_audio(url):
+        if vid_path := download_video_audio(url, message):
             logging.info(f"Path del video: {vid_path}")
             ext = os.path.splitext(vid_path)[1]
             new_name = vid_path.replace(ext, '.mp3')
