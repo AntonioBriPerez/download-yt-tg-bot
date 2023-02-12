@@ -2,7 +2,7 @@ import ffmpeg
 import os
 import logging
 from moviepy.video.io.VideoFileClip import VideoFileClip
-def split_video(file_path, max_size_mb=50):
+def split_video(file_path, max_size_mb=40):
     # Load the video file using moviepy
     video = VideoFileClip(file_path)
 

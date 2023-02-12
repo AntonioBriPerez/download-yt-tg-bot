@@ -16,7 +16,7 @@ bot = telebot.TeleBot(API_TOKEN)
 def download_video(url, message):
     try:
         yt = YouTube(url)
-        return yt.streams.filter(res="720p").first().download()
+        return yt.streams.filter(res="1080p").first().download()
     except Exception as e: 
         logging.error(f"Ha habido un error: {e}")
         bot.send_message(chat_id=message.chat.id, text='There was an error downloading the video')
@@ -70,10 +70,10 @@ def handle_download(message):
             video_size = get_file_size(vid_path)
             logging.info("Total video size: " + str(video_size) + " MB")
             bot.send_message(text="Video size: " + str(video_size) + " MB", chat_id=message.chat.id)
-            if video_size >= 50:
-                bot.send_message(text="Videos over 50 MB are not supported. Processing in chunks of 50MB... (it can be slow)", chat_id=message.chat.id)
+            if video_size >= 40:
+                bot.send_message(text="Videos over 40 MB are not supported. Processing in chunks of 40MB... (it can be slow)", chat_id=message.chat.id)
                 
-                parts = split_video(vid_path, max_size_mb=50)
+                parts = split_video(vid_path, max_size_mb=40)
                 for idx, p in enumerate(parts): 
                     
                     bot.send_document(chat_id=message.chat.id, document=open(p, 'rb'))
