@@ -45,7 +45,6 @@ def handle_download(message):
             logger.info("Total video size: " + str(video_size) + " MB")
             bot.send_message(text="Video size: " + str(video_size) + " MB", chat_id=message.chat.id)
             split_video(vid_path, bot, message, parts_size_mb=50)
-            os.remove(vid_path)
     else:
         bot.send_message(chat_id=message.chat.id, text='Invalid format. Use /download <video_url> to download a video.')
 
