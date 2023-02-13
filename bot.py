@@ -44,12 +44,7 @@ def handle_download(message):
             video_size = get_file_size(vid_path)
             logger.info("Total video size: " + str(video_size) + " MB")
             bot.send_message(text="Video size: " + str(video_size) + " MB", chat_id=message.chat.id)
-            if video_size >= 45:
-                bot.send_message(text="Videos over 45 MB are not supported. Processing in chunks of 45MB aproximately... (it can be slow 10-15 minutes)", chat_id=message.chat.id)
-                split_video(vid_path, bot,message,parts_size_mb=45)
-            else:
-                bot.send_document(chat_id=message.chat.id, document=open(vid_path, 'rb'))
-                logger.info("Video sent successfully")
+            split_video(vid_path, bot, message, parts_size_mb=50)
             os.remove(vid_path)
     else:
         bot.send_message(chat_id=message.chat.id, text='Invalid format. Use /download <video_url> to download a video.')

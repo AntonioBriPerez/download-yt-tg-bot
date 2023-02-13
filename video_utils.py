@@ -34,26 +34,26 @@ def split_video(file_path, bot,message,parts_size_mb=40):
     file_size = os.path.getsize(file_path) / 1048576
     if file_size <= parts_size_mb:
         # If the file is smaller than the maximum size, return the file as a single part
-        return [file_path]
+        bot.send_video(chat_id=message.chat.id, video=open(file_path, 'rb'))
+        os.remove(file_path)
+    
+    else:
+        # Calculate the number of parts
+        num_parts = int(file_size / parts_size_mb) + 1
 
-    # Calculate the number of parts
-    num_parts = int(file_size / parts_size_mb) + 1
+        # Calculate the duration of each part
+        part_duration = video_length / num_parts
 
-    # Calculate the duration of each part
-    part_duration = video_length / num_parts
-
-    # Split the video into parts and return a list of part paths
-    part_paths = []
-    for i in range(num_parts):
-        bot.send_message(chat_id=message.chat.id, text=f"Processing video {i+1}/{num_parts}")
-        part_start = i * part_duration
-        part_end = (i + 1) * part_duration
-        part_video = video.subclip(part_start, part_end)
-        filename, extension = os.path.splitext(file_path)
-        part_path = f'{filename}_part{i}{extension}'
-        part_paths.append(part_path)
-        part_video.write_videofile(part_path)
-        bot.send_document(chat_id=message.chat.id, document=open(part_path, 'rb'))
-        os.remove(part_path)
-
-    return part_paths
+        # Split the video into parts and return a list of part paths
+        part_paths = []
+        for i in range(num_parts):
+            bot.send_message(chat_id=message.chat.id, text=f"Processing video {i+1}/{num_parts}")
+            part_start = i * part_duration
+            part_end = (i + 1) * part_duration
+            part_video = video.subclip(part_start, part_end)
+            filename, extension = os.path.splitext(file_path)
+            part_path = f'{filename}_part{i}{extension}'
+            part_paths.append(part_path)
+            part_video.write_videofile(part_path)
+            bot.send_video(chat_id=message.chat.id, video=open(part_path, 'rb'))
+            os.remove(part_path)

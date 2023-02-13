@@ -1,5 +1,5 @@
 # docker run -d tg-bot-yt-download:0.0.1
-FROM ubuntu:latest
+FROM ubuntu:23.04
 
 WORKDIR /app
 
@@ -13,5 +13,5 @@ COPY .env /app/
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 
-# ENTRYPOINT ["tail", "-f", "/dev/null"]
-CMD ["python3", "bot.py"]
+ENTRYPOINT ["tail", "-f", "/dev/null"]
+# CMD ["python3", "bot.py"]
