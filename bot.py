@@ -3,7 +3,7 @@ from telebot.types import Message
 import logging
 import os
 from dotenv import load_dotenv
-from video_utils import deliver_video, download_video, download_video_audio
+from video_utils import split_video, download_video, download_video_audio
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ def handle_download(message):
             bot.send_message(text="Video size: " + str(video_size) + " MB", chat_id=message.chat.id)
             if video_size >= 45:
                 bot.send_message(text="Videos over 45 MB are not supported. Processing in chunks of 45MB aproximately... (it can be slow 10-15 minutes)", chat_id=message.chat.id)
-                deliver_video(vid_path, bot,message,max_size_mb=45)
+                split_video(vid_path, bot,message,parts_size_mb=45)
             else:
                 bot.send_document(chat_id=message.chat.id, document=open(vid_path, 'rb'))
                 logger.info("Video sent successfully")
