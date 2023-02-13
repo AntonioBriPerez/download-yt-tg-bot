@@ -13,5 +13,5 @@ COPY .env /app/
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 
-ENTRYPOINT ["tail", "-f", "/dev/null"]
-# CMD ["python3", "bot.py"]
+# ENTRYPOINT ["tail", "-f", "/dev/null"]
+CMD ["python3", "bot.py"]
