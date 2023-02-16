@@ -3,7 +3,7 @@ from telebot.types import Message
 import logging
 import os
 from dotenv import load_dotenv
-from video_utils import split_video, download_video, download_video_audio
+from video_utils import split_video, download_asset
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -39,7 +39,7 @@ def handle_download(message):
         url = message.text.split()[1]
         print_message_metadata(message)
         logger.info("Downloading video...")
-        if vid_path := download_video(url, message, bot):
+        if vid_path := download_asset(url, message, bot):
             logger.info(f"Path del video: {vid_path}")
             video_size = get_file_size(vid_path)
             logger.info("Total video size: " + str(video_size) + " MB")
@@ -54,7 +54,7 @@ def handle_download_audio(message):
         url = message.text.split()[1]
         print_message_metadata(message)
         
-        if vid_path := download_video_audio(url, message, bot):
+        if vid_path := download_asset(url, message, bot, audio=True):
             logger.info(f"Path del video: {vid_path}")
             ext = os.path.splitext(vid_path)[1]
             new_name = vid_path.replace(ext, '.mp3')
