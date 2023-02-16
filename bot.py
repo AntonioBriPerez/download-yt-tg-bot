@@ -3,7 +3,7 @@ from telebot.types import Message
 import logging
 import os
 from dotenv import load_dotenv
-from video_utils import split_video, download_asset
+from video_utils import split_video, download_asset, get_file_size
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -29,9 +29,6 @@ def start(message):
 def handle_health(message):
     bot.send_message(chat_id=message.chat.id, text='up and running!')
 
-def get_file_size(file_path):
-    file_size = os.path.getsize(file_path)
-    return file_size / (1024 * 1024)
 
 @bot.message_handler(commands=['download'])
 def handle_download(message):

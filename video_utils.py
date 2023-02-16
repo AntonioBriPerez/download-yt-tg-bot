@@ -6,6 +6,11 @@ from uuid import uuid4
 import logging
 logger = logging.getLogger(__name__)
 
+def get_file_size(file_path):
+    file_size = os.path.getsize(file_path)
+    return file_size / (1024 * 1024)
+
+
 def download_asset(url, message, bot, audio=False): 
     try:
         yt = YouTube(url)
