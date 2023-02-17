@@ -3,7 +3,7 @@ from telebot.types import Message
 import logging
 import os
 from dotenv import load_dotenv
-from video_utils import split_video, download_video, download_video_audio
+from video_utils import split_video, download_asset, get_file_size
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -29,40 +29,44 @@ def start(message):
 def handle_health(message):
     bot.send_message(chat_id=message.chat.id, text='up and running!')
 
-def get_file_size(file_path):
-    file_size = os.path.getsize(file_path)
-    return file_size / (1024 * 1024)
 
 @bot.message_handler(commands=['download'])
 def handle_download(message):
+    handle_asset(message, bot)
+    
+
+def handle_asset(message, bot, audio=False):
     if len(message.text.split()) == 2:
         url = message.text.split()[1]
         print_message_metadata(message)
-        logger.info("Downloading video...")
-        if vid_path := download_video(url, message, bot):
-            logger.info(f"Path del video: {vid_path}")
-            video_size = get_file_size(vid_path)
-            logger.info("Total video size: " + str(video_size) + " MB")
-            bot.send_message(text="Video size: " + str(video_size) + " MB", chat_id=message.chat.id)
-            split_video(vid_path, bot, message, parts_size_mb=50)
+        if audio:
+            if vid_path := download_asset(url, message, bot, audio=True):
+                handle_audio(message, bot, vid_path)
+        else:
+            if vid_path := download_asset(url, message, bot):
+                handle_video(message, bot, vid_path)
+                
     else:
         bot.send_message(chat_id=message.chat.id, text='Invalid format. Use /download <video_url> to download a video.')
 
+def handle_video(message, bot, vid_path):
+    video_size = get_file_size(vid_path)
+    bot.send_message(text="Video size: " + str(video_size) + " MB", chat_id=message.chat.id)
+    split_video(vid_path, bot, message, parts_size_mb=50)
+
+def handle_audio(message, bot, vid_path):
+    ext = os.path.splitext(vid_path)[1]
+    new_name = vid_path.replace(ext, '.mp3')
+    os.rename(vid_path, new_name)
+    bot.send_document(chat_id=message.chat.id, document=open(new_name, 'rb'))
+    os.remove(new_name)
+            
+
+
 @bot.message_handler(commands=['download_audio'])
 def handle_download_audio(message):
-    if len(message.text.split()) == 2:
-        url = message.text.split()[1]
-        print_message_metadata(message)
-        
-        if vid_path := download_video_audio(url, message, bot):
-            logger.info(f"Path del video: {vid_path}")
-            ext = os.path.splitext(vid_path)[1]
-            new_name = vid_path.replace(ext, '.mp3')
-            os.rename(vid_path, new_name)
-            bot.send_document(chat_id=message.chat.id, document=open(new_name, 'rb'))
-            os.remove(new_name)
-    else:
-        bot.send_message(chat_id=message.chat.id, text='Invalid format. Use /download_audio <video_url> to download the audio of a video.')
+    handle_asset(message, bot, audio=True)
+
 
 @bot.message_handler(commands=['help'])
 def handle_help(message): 

@@ -6,22 +6,23 @@ from uuid import uuid4
 import logging
 logger = logging.getLogger(__name__)
 
-def download_video_audio(url, message, bot): 
-    try:
-        yt = YouTube(url)
-        return yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download()    
-    except Exception as e: 
-        logger.error(f"Ha habido un error: {e}")
-        bot.send_message(chat_id=message.chat.id, text='There was an error downloading the audio')
+def get_file_size(file_path):
+    file_size = os.path.getsize(file_path)
+    return file_size / (1024 * 1024)
 
 
-def download_video(url, message, bot):
+def download_asset(url, message, bot, audio=False): 
     try:
         yt = YouTube(url)
-        return yt.streams.filter(progressive=True, file_extension='mp4').get_highest_resolution().download(filename=f"video_{str(uuid4())}.mp4")    
+        if not audio: 
+            return yt.streams.filter(progressive=True, file_extension='mp4').get_highest_resolution().download(filename=f"video_{str(uuid4())}.mp4")
+        else: 
+            return yt.streams.filter(only_audio=True).first().download() 
+                
     except Exception as e: 
         logger.error(f"Ha habido un error: {e}")
-        bot.send_message(chat_id=message.chat.id, text='There was an error downloading the video')
+        bot.send_message(chat_id=message.chat.id, text='There was an error downloading the video')    
+
 
 def split_video(file_path, bot,message,parts_size_mb=40):
     # Load the video file using moviepy
